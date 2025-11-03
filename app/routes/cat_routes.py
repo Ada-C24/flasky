@@ -7,15 +7,8 @@ cats_bp = Blueprint("cat_bp", __name__, url_prefix="/cats")
 @cats_bp.post("")
 def create_cat():
     request_body = request.get_json()
-    name = request_body["name"]
-    color = request_body["color"]
-    personality = request_body["personality"]
 
-    new_cat = Cat(
-        name=name,
-        color=color,
-        personality=personality
-    )
+    new_cat = Cat.from_dict(request_body)
     db.session.add(new_cat)
     db.session.commit()
 
