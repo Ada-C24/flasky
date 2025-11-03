@@ -19,14 +19,7 @@ def create_cat():
     db.session.add(new_cat)
     db.session.commit()
 
-    cat_response = dict(
-        id=new_cat.id,
-        name=new_cat.name,
-        color=new_cat.color,
-        personality=new_cat.personality
-    )
-
-    return cat_response, 201
+    return new_cat.to_dict(), 201
 
 @cats_bp.get("")
 def get_all_cats():
@@ -50,26 +43,15 @@ def get_all_cats():
     result_list = []
 
     for cat in cats:
-        result_list.append(dict(
-            id=cat.id,
-            name=cat.name,
-            color=cat.color,
-            personality=cat.personality
-        ))
+        result_list.append(cat.to_dict())
 
     return result_list
 
 @cats_bp.get("/<id>")
 def get_single_cat(id):
     cat = validate_cat(id)
-    cat_dict = dict(
-        id=cat.id,
-        name=cat.name,
-        color=cat.color,
-        personality=cat.personality
-    )
 
-    return cat_dict
+    return cat.to_dict()
 
 def validate_cat(id):
     try:
