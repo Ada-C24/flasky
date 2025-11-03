@@ -1,20 +1,24 @@
-from flask import abort, Blueprint, make_response, request, Response
+from flask import Blueprint, request, Response
 from ..models.cat import Cat
 from ..db import db
+from .routes_utilities import validate_model
 
-cats_bp = Blueprint("cat_bp", __name__, url_prefix="/cats")
+bp = Blueprint("cat_bp", __name__, url_prefix="/cats")
 
-@cats_bp.post("")
+@bp.post("")
 def create_cat():
     request_body = request.get_json()
-
-    new_cat = Cat.from_dict(request_body)
+    try:
+        new_cat = Cat.from_dict(request_body)
+    except KeyError as error:
+        return {"error": f"Missing required field: {error.args[0]}"}, 400
+    
     db.session.add(new_cat)
     db.session.commit()
 
     return new_cat.to_dict(), 201
 
-@cats_bp.get("")
+@bp.get("")
 def get_all_cats():
     query = db.select(Cat)
     name_param = request.args.get("name")
@@ -40,31 +44,16 @@ def get_all_cats():
 
     return result_list
 
-@cats_bp.get("/<id>")
+@bp.get("/<id>")
 def get_single_cat(id):
-    cat = validate_cat(id)
+    cat = validate_model(Cat, id)
 
     return cat.to_dict()
 
-def validate_cat(id):
-    try:
-        id = int(id)
-    except ValueError:
-        invalid = {"message": f"Cat id ({id}) is invalid."}
-        abort(make_response(invalid, 400))
-
-    query = db.select(Cat).where(Cat.id == id)
-    cat = db.session.scalar(query)
-    if not cat:    
-        not_found = {"message": f"Cat with id ({id}) not found."}
-        abort(make_response(not_found, 404))
-
-    return cat
-
-@cats_bp.put("/<id>")
+@bp.put("/<id>")
 def replace_cat(id):
-    cat = validate_cat(id)
-
+    cat = validate_model(Cat, id)
+ 
     request_body = request.get_json()
     cat.name = request_body["name"]
     cat.color = request_body["color"]
@@ -74,9 +63,9 @@ def replace_cat(id):
 
     return Response(status=204, mimetype="application/json")
 
-@cats_bp.delete("/<id>")
+@bp.delete("/<id>")
 def delete_cat(id):
-    cat = validate_cat(id)
+    cat = validate_model(Cat, id)
 
     db.session.delete(cat)
     db.session.commit()
