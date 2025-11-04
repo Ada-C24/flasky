@@ -1,48 +1,19 @@
+from .routes_utilities import validate_model, create_model, get_models_with_filters
 from flask import Blueprint, request, Response
 from ..models.cat import Cat
 from ..db import db
-from .routes_utilities import validate_model
 
 bp = Blueprint("cat_bp", __name__, url_prefix="/cats")
 
 @bp.post("")
 def create_cat():
     request_body = request.get_json()
-    try:
-        new_cat = Cat.from_dict(request_body)
-    except KeyError as error:
-        return {"error": f"Missing required field: {error.args[0]}"}, 400
     
-    db.session.add(new_cat)
-    db.session.commit()
-
-    return new_cat.to_dict(), 201
+    return create_model(Cat, request_body)
 
 @bp.get("")
 def get_all_cats():
-    query = db.select(Cat)
-    name_param = request.args.get("name")
-    if name_param:
-        # find exact match for name
-        query = query.where(Cat.name == name_param)
-
-    color_param = request.args.get("color")
-    if color_param:
-        query = query.where(Cat.color.ilike(f"%{color_param}%"))
-
-    personality_param = request.args.get("personality")
-    if personality_param:
-        query = query.where(Cat.personality.ilike(f"%{personality_param}%"))
-
-    query = query.order_by(Cat.id)
-
-    cats = db.session.scalars(query)
-    result_list = []
-
-    for cat in cats:
-        result_list.append(cat.to_dict())
-
-    return result_list
+    return get_models_with_filters(Cat, request.args)
 
 @bp.get("/<id>")
 def get_single_cat(id):
