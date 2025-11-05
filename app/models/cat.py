@@ -12,13 +12,20 @@ class Cat(db.Model):
     caretaker: Mapped[Optional["Caretaker"]] = relationship(back_populates="cats")
     
     def to_dict(self):
-        return {
+        result = {
             "id": self.id, 
             "name": self.name, 
             "color": self.color,
             "personality": self.personality,
-            "caretaker": self.caretaker.name if self.caretaker_id else None
         }
+
+        if self.caretaker_id:
+            result.update({
+                "caretaker_id": self.caretaker_id,
+                "caretaker": self.caretaker.name
+            })
+
+        return result
     
     @classmethod
     def from_dict(cls, cat_data):

@@ -26,6 +26,11 @@ def create_cat_with_caretaker_id(id):
 def get_all_caretakers():
     return get_models_with_filters(Caretaker, request.args)
 
+@bp.get("/<id>")
+def get_caretaker(id):
+    caretaker = validate_model(Caretaker, id)
+    return caretaker.to_dict()
+
 @bp.get("/<id>/cats")
 def get_all_caretaker_cats(id):
     caretaker = validate_model(Caretaker, id)
