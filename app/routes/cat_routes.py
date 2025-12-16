@@ -34,6 +34,20 @@ def replace_cat(id):
 
     return Response(status=204, mimetype="application/json")
 
+
+@bp.patch("/<cat_id>/pet")
+def pet_cat(cat_id):
+    cat = validate_model(Cat, cat_id)
+
+    if cat.pet_count is None:
+        cat.pet_count = 1
+    else:
+        cat.pet_count += 1
+    
+    db.session.commit()
+
+    return cat.to_dict()
+
 @bp.delete("/<id>")
 def delete_cat(id):
     cat = validate_model(Cat, id)
