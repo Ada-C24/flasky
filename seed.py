@@ -23,7 +23,7 @@ with my_app.app_context():
     db.session.add(Cat(name="Alder", color="auburn", personality="bouncy, trouncy, flouncy, pouncy, fun, fun, fun, fun, fun")),
     db.session.add(Cat(name="Morty", color="orange", caretaker_id=3, personality="orange")),
     db.session.add(Cat(name="fluffy", color="white", caretaker_id=3, personality="evil with a hint of benevolent")),
-    db.session.add(Cat(name="Reginold", color="orange", personality="only has one brain cell, but is descendent of Reginold the Great Tabby")),
+    db.session.add(Cat(name="Reginold", color="orange", personality="is a descendent of Reginold the Great Tabby")),
     db.session.add(Cat(name="Katosa", color="gray tabby", caretaker_id=6, personality="Crazy Hunter")),
     db.session.add(Cat(name="Milly", color="Tortoiseshell", personality="Loves you a lot but will probably sneeze all over you")),
     db.session.add(Cat(name="Meryl", color="Tortoiseshell", caretaker_id=5, personality="Bossy but tries to pass as the sweet one")),
